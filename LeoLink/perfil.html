@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - LeolinK</title>
+    <style>
+        /* Reset e base */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header com seta de voltar */
+        .header {
+            padding: 20px;
+            border-bottom: 1px solid #333;
+            background-color: #1e1e1e;
+            position: relative;
+            text-align: center;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            font-size: 32px;
+            color: #b8c73b;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .back-btn:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        /* Conteúdo do perfil */
+        .profile-content {
+            padding: 20px;
+            max-width: 700px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 4px solid #b8c73b;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-info h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .profile-role {
+            background-color: #b8c73b;
+            color: #000;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+            margin: 6px 0;
+        }
+
+        .profile-course {
+            color: #aaa;
+            font-size: 15px;
+        }
+
+        .follow-btn {
+            background-color: #b8c73b;
+            color: #000;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .follow-btn.following {
+            background-color: #333;
+            color: #e0e0e0;
+        }
+
+        /* Posts */
+        .profile-posts {
+            margin-top: 30px;
+        }
+
+        .post {
+            background-color: #1e1e1e;
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            gap: 12px;
+        }
+
+        .post-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .post-avatar img {
+            width: 100%;
+            height: 100%;
+        }
+
+        .post-author {
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        .post-time {
+            color: #888;
+            font-size: 13px;
+        }
+
+        .post-content {
+            margin: 12px 0;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .post-content img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 10px;
+        }
+
+        .post-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-top: 8px;
+        }
+
+        .tag-academico { background-color: #ff5722; color: #fff; }
+        .tag-informativo { background-color: #2196f3; color: #fff; }
+        .tag-cultural { background-color: #9c27b0; color: #fff; }
+        .tag-lazer { background-color: #4caf50; color: #fff; }
+        .tag-profissional { background-color: #ffc107; color: #000; }
+
+        .post-actions {
+            display: flex;
+            gap: 25px;
+            margin-top: 15px;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .action-btn {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.2s;
+        }
+
+        .action-btn:hover {
+            color: #b8c73b;
+        }
+
+        .action-btn.liked {
+            color: #b8c73b;
+        }
+
+        .action-btn.liked svg {
+            fill: #b8c73b;
+        }
+
+        /* === COMMENT INPUT COM AUTO-RESIZE === */
+        .comment-section {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .comment-section.open {
+            display: block;
+        }
+
+        .comment-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+            align-items: flex-start;
+        }
+
+        .comment-input textarea {
+            flex: 1;
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            border-radius: 20px;
+            padding: 10px 15px;
+            color: #e0e0e0;
+            font-size: 14px;
+            resize: none;                    /* ← NÃO REDIMENSIONÁVEL */
+            min-height: 40px;                /* ← altura inicial */
+            max-height: 300px;               /* ← limite máximo */
+            overflow-y: hidden;                /* ← rolagem após 300px */
+            line-height: 1.5;
+            transition: height 0.15s ease;
+        }
+
+        .comment-input textarea:focus {
+            outline: none;
+            border-color: #b8c73b;
+        }
+
+        .comment-input button {
+            background-color: #b8c73b;
+            color: #000;
+            border: none;
+            padding: 0 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            height: 40px;
+            align-self: center;
+        }
+
+        .comments-list {
+            margin-top: 10px;
+        }
+
+        .comment {
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            color: #b8c73b;
+            font-size: 13px;
+        }
+
+        /* Pop-up de compartilhamento */
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .share-modal.open {
+            display: flex;
+        }
+
+        .share-box {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            border: 1px solid #444;
+            text-align: center;
+            position: relative;
+        }
+
+        .share-box h3 {
+            margin-top: 0;
+            color: #b8c73b;
+        }
+
+        .share-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .share-btn {
+            background-color: #2d2d2d;
+            color: #e0e0e0;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+
+        .share-btn:hover {
+            background-color: #3a3a3a;
+        }
+
+        .share-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 24px;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 15px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 600px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .profile-avatar {
+                width: 90px;
+                height: 90px;
+            }
+            .post-actions {
+                gap: 15px;
+                font-size: 13px;
+            }
+            .back-btn {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header com seta de voltar -->
+    <div class="header">
+        <button class="back-btn" onclick="window.location.href='feed.html'">←</button>
+    </div>
+
+    <!-- Conteúdo do perfil -->
+    <div class="profile-content">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <img src="leolink.png" alt="Avatar">
+            </div>
+            <div class="profile-info">
+                <h1>Usuário LeolinK</h1>
+                <div class="profile-role">Docente</div>
+                <div class="profile-course">Bacharelado em Engenharia de Software</div>
+                <button class="follow-btn" id="followBtn">Seguir</button>
+            </div>
+        </div>
+
+        <div class="profile-posts">
+            <h2>Postagens recentes</h2>
+
+            <!-- Post 1 -->
+            <div class="post" data-post-id="1">
+                <div class="post-header">
+                    <div class="post-avatar">
+                        <img src="leolink.png" alt="Avatar">
+                    </div>
+                    <div>
+                        <div class="post-author">Usuário LeolinK <span class="profile-role">Docente</span></div>
+                        <div class="post-time">Agora mesmo</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    O desenvolvimento de metodologias híbridas em pesquisa qualitativa-quantitativa tem permitido avanços significativos na análise de fenômenos sociais complexos. A triangulação de dados, ao integrar entrevistas, surveys e observação participante, fortalece a validade interna dos estudos. Nesse contexto, a construção de modelos explicativos exige rigor ético e transparência na coleta. Cada etapa do processo analítico revela camadas de significado que enriquecem o conhecimento científico, consolidando a ciência como prática reflexiva e cumulativa em constante renovação.
+                </div>
+                <span class="post-tag tag-academico">Acadêmico</span>
+                <div class="post-actions">
+                    <span class="action-btn like-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                        Curtir
+                    </span>
+                    <span class="action-btn comment-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        Comentar
+                    </span>
+                    <span class="action-btn share-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                        Compartilhar
+                    </span>
+                </div>
+
+                <!-- Seção de comentários -->
+                <div class="comment-section">
+                    <div class="comment-input">
+                        <textarea placeholder="Escreva um comentário..."></textarea>
+                        <button>Enviar</button>
+                    </div>
+                    <div class="comments-list">
+                        <!-- Comentários serão inseridos aqui -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Post 2 -->
+            <div class="post" data-post-id="2">
+                <div class="post-header">
+                    <div class="post-avatar">
+                        <img src="leolink.png" alt="Avatar">
+                    </div>
+                    <div>
+                        <div class="post-author">Usuário LeolinK <span class="profile-role">Docente</span></div>
+                        <div class="post-time">Agora mesmo</div>
+                    </div>
+                </div>
+                <div class="post-content">
+                    hello
+                    <br><br>
+                    <img src="leolink.png" alt="Logo LeolinK">
+                </div>
+                <span class="post-tag tag-informativo">Informativo</span>
+                <div class="post-actions">
+                    <span class="action-btn like-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                        Curtir
+                    </span>
+                    <span class="action-btn comment-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                        Comentar
+                    </span>
+                    <span class="action-btn share-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                        Compartilhar
+                    </span>
+                </div>
+                <div class="comment-section">
+                    <div class="comment-input">
+                        <textarea placeholder="Escreva um comentário..."></textarea>
+                        <button>Enviar</button>
+                    </div>
+                    <div class="comments-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Compartilhamento -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-box">
+            <button class="close-modal" id="closeModal">×</button>
+            <h3>Compartilhar postagem</h3>
+            <div class="share-options">
+                <div class="share-btn" onclick="copyLink()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copiar link
+                </div>
+                <div class="share-btn" onclick="shareEmail()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    Enviar por e-mail
+                </div>
+                <div class="share-btn" onclick="shareTwitter()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.org 7 8.5c-1.5 1-3 2.7-3.6 4.3 2.5-1.6 5-1.6 7.4-.3c1.7-3 4.8-5.5 8.2-5.5 0-.4-.1-.8-.1-1.2 0-3-2.4-5.5-5.5-5.5-1.5 0-2.9.6-4 1.6C9.4 2.3 8.2 2 7 2c-2.8 0-5 2.2-5 5 0 .5.1 1 .2 1.4C1.3 8.1.7 7.7.2 7.2c-.6 1-1 2.1-1 3.3 0 3.8 2.8 7 6.6 7.7-1.2.3-2.5.5-3.8.5-1.1 0-2.2-.1-3.2-.4 1.2 3.8 4.7 6.5 8.9 6.6 5.3.1 9.7-4.2 9.7-9.6 0-.1 0-.3 0-.4 1.1-1.2 2-2.7 2.7-4.4z"></path></svg>
+                    Twitter (X)
+                </div>
+                <div class="share-btn" onclick="shareWhatsApp()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.297-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.626.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.951.951-3.591-.213-.36a9.866 9.866 0 01-1.389-5.031 10 10 0 015.714-8.993 10 10 0 0115.099 1.989c.8 2.013.8 4.493 0 6.506a10 10 0 01-5.714 8.993z"></path></svg>
+                    WhatsApp
+                </div>
+                <div class="share-btn" onclick="shareFacebook()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                    Facebook
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+     
+        // === ENTER ENVIA COMENTÁRIO ===
+        document.querySelectorAll('.comment-input').forEach(container => {
+        const textarea = container.querySelector('textarea');
+        const button   = container.querySelector('button');
+
+        /* -------------------------------------------------
+        1. Ajusta a altura e controla a barra de rolagem
+        ------------------------------------------------- */
+        const adjustHeight = () => {
+            // reseta para medir a altura real
+            textarea.style.height = 'auto';
+
+            const scrollHeight = textarea.scrollHeight;
+            const newHeight    = Math.min(scrollHeight, 300);   // nunca > 300px
+            textarea.style.height = newHeight + 'px';
+
+            // barra só aparece quando realmente ultrapassa 300px
+            textarea.style.overflowY = scrollHeight > 300 ? 'auto' : 'hidden';
+        };
+
+        /* -------------------------------------------------
+        2. Bloqueia inserção de nova linha quando já está no limite
+        ------------------------------------------------- */
+        const blockNewLines = (e) => {
+            // já está no limite (altura == 300px) ?
+            if (textarea.clientHeight >= 300) {
+                // impede Enter (com ou sem Shift) e colagem que faria crescer
+                if (e.key === 'Enter' || e.type === 'paste') {
+                    e.preventDefault();
+                }
+            }
+        };
+
+        textarea.addEventListener('input', adjustHeight);
+        textarea.addEventListener('keydown', blockNewLines);
+        textarea.addEventListener('paste', blockNewLines);   // colar texto
+
+        /* -------------------------------------------------
+        3. Envio do comentário
+        ------------------------------------------------- */
+        const sendComment = () => {
+            const text = textarea.value.trim();
+            if (!text) return;
+
+            const post = button.closest('.post');
+            const list = post.querySelector('.comments-list');
+
+            const comment = document.createElement('div');
+            comment.className = 'comment';
+            comment.innerHTML = `<div class="comment-author">Você</div>${text.replace(/\n/g, '<br>')}`;
+            list.appendChild(comment);
+
+            // limpa e volta ao tamanho inicial
+            textarea.value = '';
+            textarea.style.height = '40px';
+            textarea.style.overflowY = 'hidden';
+        };
+
+        button.addEventListener('click', sendComment);
+
+        // Enter (sem Shift) envia o comentário
+        textarea.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();   // evita nova linha
+                sendComment();
+            }
+        });
+
+        // inicializa
+        adjustHeight();
+    });
+
+        // === SEGUIR ===
+        const followBtn = document.getElementById('followBtn');
+        let following = false;
+        followBtn.addEventListener('click', () => {
+            following = !following;
+            followBtn.textContent = following ? 'Seguindo' : 'Seguir';
+            followBtn.classList.toggle('following');
+        });
+
+        // === CURTIR ===
+        document.querySelectorAll('.like-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('liked');
+            });
+        });
+
+        // === ABRIR COMENTÁRIOS ===
+        document.querySelectorAll('.comment-toggle').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const post = btn.closest('.post');
+                const section = post.querySelector('.comment-section');
+                section.classList.toggle('open');
+            });
+        });
+
+        // === ENVIAR COMENTÁRIO ===
+        document.querySelectorAll('.comment-input button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const textarea = btn.previousElementSibling;
+                const text = textarea.value.trim();
+                if (!text) return;
+
+                const post = btn.closest('.post');
+                const list = post.querySelector('.comments-list');
+                const comment = document.createElement('div');
+                comment.className = 'comment';
+                comment.innerHTML = `<div class="comment-author">Você</div>${text.replace(/\n/g, '<br>')}`;
+                list.appendChild(comment);
+
+                textarea.value = '';
+                textarea.style.height = '40px'; // reset
+            });
+        });
+
+        // === COMPARTILHAR ===
+        let currentPostId = null;
+        document.querySelectorAll('.share-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                currentPostId = btn.closest('.post').dataset.postId;
+                document.getElementById('shareModal').classList.add('open');
+            });
+        });
+
+        document.getElementById('closeModal').addEventListener('click', () => {
+            document.getElementById('shareModal').classList.remove('open');
+        });
+
+        function copyLink() {
+            const url = `${window.location.origin}${window.location.pathname}?post=${currentPostId}`;
+            navigator.clipboard.writeText(url).then(() => {
+                alert('Link copiado!');
+            });
+        }
+
+        function shareEmail() {
+            const subject = "Veja esta postagem no LeolinK";
+            const body = `Confira: ${window.location.href}?post=${currentPostId}`;
+            window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        }
+
+        function shareTwitter() {
+            const text = "Confira esta postagem no LeolinK!";
+            const url = `${window.location.href}?post=${currentPostId}`;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        function shareWhatsApp() {
+            const text = "Confira esta postagem no LeolinK!";
+            const url = `${window.location.href}?post=${currentPostId}`;
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+        }
+
+        function shareFacebook() {
+            const url = `${window.location.href}?post=${currentPostId}`;
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        // Fechar modal clicando fora
+        document.getElementById('shareModal').addEventListener('click', (e) => {
+            if (e.target === document.getElementById('shareModal')) {
+                document.getElementById('shareModal').classList.remove('open');
+            }
+        });
+    </script>
+</body>
+</html>
