@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeolinK</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('beck.jpg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            animation: fadeInBody 1.5s ease-in-out;
+        }
+
+        @keyframes fadeInBody {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+       .logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            border-radius: 50%; 
+            object-fit: cover;        
+            animation: pulse 3s infinite ease-in-out;
+}
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            text-align: center;
+            animation: fadeInUp 1.2s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            color: #000;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* ------------------------------------------- */
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #000;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.6rem;
+            margin-bottom: 1rem;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #fff;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: #107eb1;
+            box-shadow: 0 0 8px #107eb1;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.7rem;
+            background-color: #107eb1;
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(16, 126, 177, 0.4);
+        }
+
+        button:hover {
+            background-color: #0a5c83;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        p {
+            text-align: center;
+            margin-top: 1rem;
+            color: #fff;
+        }
+
+        a {
+            color: #f3f5f6;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- LOGO -->
+    <img src="logo.jpeg" alt="Logo LeolinK" class="logo">
+
+    <!-- LOGIN -->
+    <div class="container">
+        <h2>LeolinK</h2>
+
+        <form action="login_process.php" method="POST">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Digite seu email" required>
+
+            <label for="senha">Senha:</label>
+            <input type="password" id="senha" name="senha" placeholder="Digite sua senha" required>
+
+            <button type="submit">Entrar</button>
+        </form>
+
+        <p>Não tem conta? <a href="cadastro.html">Cadastre-se aqui</a>.</p>
+    </div>
+</body>
+</html>

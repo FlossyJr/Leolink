@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LeolinK — Cadastro</title>
+
+    <!-- html2pdf CDN (gera PDF client-side) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+
+    <style>
+        :root{
+            --accent: #107eb1;
+            --accent-dark: #0a5c83;
+            --glass: rgba(255,255,255,0.15);
+            --glass-2: rgba(255,255,255,0.10);
+            --card-shadow: 0 6px 24px rgba(0,0,0,0.30);
+            --radius: 14px;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Reset & page */
+        *{box-sizing:border-box}
+        body{
+            margin:0;
+            min-height:100vh;
+            display:flex;
+            flex-direction:column;
+            background-image: url('back.jpg');
+            background-size:cover;
+            background-position:center;
+            align-items:center;
+            animation: fadeInBody 1s ease both;
+        }
+        @keyframes fadeInBody { from{opacity:0} to{opacity:1} }
+
+        /* NAVBAR */
+        .navbar{
+            width:100%;
+            max-width:1100px;
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding: 12px 18px;
+            margin-top:18px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(6px);
+            transition: transform .22s ease, box-shadow .22s ease;
+        }
+        .navbar:hover{ transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.35); }
+
+        .nav-left{
+            display:flex;
+            align-items:center;
+            gap:12px;
+        }
+        .nav-logo{
+            width:48px;
+            height:48px;
+            border-radius:50%;
+            object-fit:cover;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: transform .25s ease;
+            cursor:pointer;
+        }
+        .nav-logo:active{ transform: scale(.96) rotate(-3deg); }
+
+        .nav-title{
+            color:#fff;
+            font-weight:700;
+            letter-spacing: .6px;
+        }
+
+        .nav-actions{
+            display:flex;
+            gap:10px;
+        }
+        .nav-btn{
+            padding:8px 12px;
+            border-radius:999px;
+            border:none;
+            cursor:pointer;
+            background:transparent;
+            color:#fff;
+            font-weight:600;
+            transition: all .18s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+        }
+        .nav-btn.primary{
+            background: var(--accent);
+        }
+        .nav-btn:hover{ transform: translateY(-3px); filter:brightness(.98); }
+        .nav-btn:active{ transform: translateY(0) scale(.98); }
+
+        /* MAIN CENTER */
+        .main-wrap{
+            width:100%;
+            max-width:900px;
+            padding:36px 22px;
+            display:flex;
+            gap:28px;
+            align-items:flex-start;
+            justify-content:center;
+            margin:28px 0 80px 0;
+        }
+
+        /* SELECTOR BOX (início) */
+        .selector-card{
+            width:100%;
+            max-width:420px;
+            padding:22px;
+            border-radius:var(--radius);
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+            box-shadow: var(--card-shadow);
+            text-align:center;
+            color:#fff;
+        }
+        .selector-title{
+            font-size:20px;
+            margin-bottom:12px;
+            font-weight:700;
+        }
+        .selector-sub{
+            margin-bottom:18px;
+            opacity:.9;
+            font-size:14px;
+        }
+        .selector-buttons{
+            display:flex;
+            gap:12px;
+            justify-content:center;
+        }
+        .selector-buttons button{
+            flex:1;
+            padding:12px 10px;
+            border-radius:10px;
+            border:none;
+            cursor:pointer;
+            font-weight:700;
+            transition: all .18s ease;
+        }
+        .selector-buttons .stu{
+            background: linear-gradient(180deg, var(--accent), var(--accent-dark));
+            color:#fff;
+        }
+        .selector-buttons .prof{
+            background: linear-gradient(180deg, #4a9fbf, #2b7ca0);
+            color:#fff;
+        }
+        .selector-buttons button:hover{ transform: translateY(-4px); }
+
+        /* FORMS CARD */
+        .form-card{
+            width:100%;
+            max-width:640px;
+            padding:20px;
+            border-radius:var(--radius);
+            background: linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.06));
+            box-shadow: var(--card-shadow);
+            color:#fff;
+            display:none; /* appear after selection */
+        }
+
+        .form-header{
+            display:flex;
+            align-items:center;
+            gap:14px;
+            margin-bottom:14px;
+        }
+        .profile-preview{
+            width:88px;
+            height:88px;
+            border-radius:12px;
+            object-fit:cover;
+            border: 3px solid rgba(255,255,255,0.12);
+            background: var(--glass-2);
+        }
+        .form-title{ font-weight:800; font-size:18px; }
+        .form-desc{ opacity:.9; font-size:13px; }
+
+        form .row{ display:flex; gap:12px; margin-bottom:10px; }
+        form .col{ flex:1; display:flex; flex-direction:column; }
+        label{ font-weight:700; font-size:13px; margin-bottom:6px; color:#fff; text-align:left; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], select, textarea{
+            padding:10px 12px;
+            border-radius:10px;
+            border:1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.06);
+            color:#fff;
+            outline:none;
+        }
+        input[type="file"]{ color:#fff; }
+        textarea{ min-height:90px; resize:vertical; padding-top:8px; }
+
+        .required{ color:#ffdede; margin-left:6px; font-size:12px; }
+
+        .small-note{ font-size:12px; opacity:.85; margin-top:6px; }
+
+        .form-actions{
+            display:flex;
+            gap:10px;
+            margin-top:16px;
+            justify-content:space-between;
+            align-items:center;
+        }
+        .left-actions{ display:flex; gap:8px; }
+        .btn{
+            padding:10px 14px;
+            border-radius:999px;
+            border:none;
+            cursor:pointer;
+            font-weight:700;
+        }
+        .btn.pdf{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.12); }
+        .btn.save{ background: var(--accent); color:#fff; }
+        .btn.back{ background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.08); }
+
+        .hint{ font-size:13px; opacity:.9; }
+
+        /* Responsive */
+        @media (max-width:880px){
+            .main-wrap{ flex-direction:column; padding:18px; gap:18px; }
+            .form-card, .selector-card{ max-width:100%; }
+            .row{ flex-direction:column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <div class="navbar" role="navigation">
+        <div class="nav-left">
+            <img src="logo.jpeg" alt="LeolinK" class="nav-logo" id="navLogo" title="LeolinK">
+            <div class="nav-title">LeolinK</div>
+        </div>
+
+        <div class="nav-actions">
+            <button class="nav-btn" id="btn-help" title="Ajuda">Ajuda</button>
+            <button class="nav-btn primary" id="btn-back-login" onclick="location.href='index.html'">login</button>
+        </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main-wrap">
+        <!-- SELECTOR: aluno / professor -->
+        <div class="selector-card" id="selectorCard" aria-hidden="false">
+            <div class="selector-title">Crie sua conta</div>
+            <div class="selector-sub">Escolha o tipo de usuário para começar o cadastro.</div>
+
+            <div class="selector-buttons">
+                <button class="stu" id="selectStudent">Acadêmico</button>
+                <button class="prof" id="selectTeacher">Docente</button>
+            </div>
+
+            <p class="small-note" style="margin-top:16px;">
+                Você pode carregar documentos agora ou pular e enviar depois. Os dados obrigatórios devem ser preenchidos.
+            </p>
+        </div>
+
+        <!-- FORM: Aluno -->
+        <div class="form-card" id="studentFormCard" aria-hidden="true">
+            <div class="form-header">
+                <img src="placeholder-profile.jpg" alt="preview" class="profile-preview" id="stuPreview">
+                <div>
+                    <div class="form-title">Cadastro — Aluno</div>
+                    <div class="form-desc">Preencha seus dados pessoais. Campos marcados são obrigatórios.</div>
+                </div>
+            </div>
+
+            <form id="studentForm" action="/register_student.php" method="POST" enctype="multipart/form-data" autocomplete="on">
+                <!-- foto e básico -->
+                <div class="row">
+                    <div class="col">
+                        <label for="stuPhoto">Foto do perfil <span class="required">*</span></label>
+                        <input type="file" id="stuPhoto" name="photo" accept="image/*" required>
+                        <div class="small-note">Tamanho recomendado: 400x400 px (proporcional a uma rede social).</div>
+                    </div>
+                    <div class="col">
+                        <label for="stuNome">Nome completo <span class="required">*</span></label>
+                        <input type="text" id="stuNome" name="nome" required>
+                        <label for="stuIdade" style="margin-top:8px;">Idade <span class="required">*</span></label>
+                        <input type="number" id="stuIdade" name="idade" min="10" max="120" required>
+                    </div>
+                </div>
+
+                <!-- cpf, curso, instituicao -->
+                <div class="row">
+                    <div class="col">
+                        <label for="stuCPF">CPF <span class="required">*</span></label>
+                        <input type="text" id="stuCPF" name="cpf" placeholder="000.000.000-00" required>
+                    </div>
+                    <div class="col">
+                        <label for="stuCurso">Curso <span class="required">*</span></label>
+                        <input type="text" id="stuCurso" name="curso" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="stuInstit">Instituição <span class="required">*</span></label>
+                        <input type="text" id="stuInstit" name="instituicao" required>
+                    </div>
+                    <div class="col">
+                        <label for="stuEmail">Email <span class="required">*</span></label>
+                        <input type="email" id="stuEmail" name="email" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="stuSenha">Senha <span class="required">*</span></label>
+                        <input type="password" id="stuSenha" name="senha" required>
+                    </div>
+                    <div class="col">
+                        <label for="stuSenha2">Confirmar senha <span class="required">*</span></label>
+                        <input type="password" id="stuSenha2" name="senha_confirm" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="stuPhone">Telefone</label>
+                        <input type="text" id="stuPhone" name="telefone" placeholder="+55 (__) _____-____">
+                    </div>
+                    <div class="col">
+                        <label for="stuEndereco">Cidade / Endereço</label>
+                        <input type="text" id="stuEndereco" name="endereco">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="stuDocs">Documentos (opcional)</label>
+                    <input type="file" id="stuDocs" name="docs[]" multiple accept=".pdf,image/*">
+                    <div class="small-note">Você pode pular este passo e enviar os documentos depois.</div>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <label for="stuBio">Sobre você</label>
+                    <textarea id="stuBio" name="bio" placeholder="Fale brevemente sobre seus interesses acadêmicos..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <div class="left-actions">
+                        <button type="button" class="btn pdf" onclick="saveAsPDF('studentFormCard')">Salvar formulário como PDF</button>
+                        <button type="submit" class="btn save">Enviar formulário</button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn back" onclick="goBackToLogin()">Recomeçar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- FORM: Professor/Cientista -->
+        <div class="form-card" id="teacherFormCard" aria-hidden="true">
+            <div class="form-header">
+                <img src="placeholder-profile.jpg" alt="preview" class="profile-preview" id="profPreview">
+                <div>
+                    <div class="form-title">Cadastro — Professor / Cientista</div>
+                    <div class="form-desc">Inclua suas informações profissionais e acadêmicas. Campos obrigatórios são nome, CPF, curso/área e instituição.</div>
+                </div>
+            </div>
+
+            <form id="teacherForm" action="/register_teacher.php" method="POST" enctype="multipart/form-data" autocomplete="on">
+                <div class="row">
+                    <div class="col">
+                        <label for="profPhoto">Foto do perfil <span class="required">*</span></label>
+                        <input type="file" id="profPhoto" name="photo" accept="image/*" required>
+                        <div class="small-note">Tamanho recomendado: 400x400 px (proporcional a uma rede social).</div>
+                    </div>
+                    <div class="col">
+                        <label for="profNome">Nome completo <span class="required">*</span></label>
+                        <input type="text" id="profNome" name="nome" required>
+                        <label for="profIdade" style="margin-top:8px;">Idade <span class="required">*</span></label>
+                        <input type="number" id="profIdade" name="idade" min="18" max="120" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="profCPF">CPF <span class="required">*</span></label>
+                        <input type="text" id="profCPF" name="cpf" placeholder="000.000.000-00" required>
+                    </div>
+                    <div class="col">
+                        <label for="profArea">Área / Curso <span class="required">*</span></label>
+                        <input type="text" id="profArea" name="curso" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="profInstit">Instituição <span class="required">*</span></label>
+                        <input type="text" id="profInstit" name="instituicao" required>
+                    </div>
+                    <div class="col">
+                        <label for="profEmail">Email <span class="required">*</span></label>
+                        <input type="email" id="profEmail" name="email" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="profSenha">Senha <span class="required">*</span></label>
+                        <input type="password" id="profSenha" name="senha" required>
+                    </div>
+                    <div class="col">
+                        <label for="profSenha2">Confirmar senha <span class="required">*</span></label>
+                        <input type="password" id="profSenha2" name="senha_confirm" required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col">
+                        <label for="profPhone">Telefone</label>
+                        <input type="text" id="profPhone" name="telefone">
+                    </div>
+                    <div class="col">
+                        <label for="profEndereco">Cidade / Endereço</label>
+                        <input type="text" id="profEndereco" name="endereco">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="profDocs">Documentos / CV (opcional)</label>
+                    <input type="file" id="profDocs" name="docs[]" multiple accept=".pdf,.doc,.docx,image/*">
+                    <div class="small-note">Você pode pular e enviar os documentos depois.</div>
+                </div>
+
+                <div style="margin-top:10px;">
+                    <label for="profBio">Resumo profissional / pesquisa</label>
+                    <textarea id="profBio" name="bio" placeholder="Descreva sua linha de pesquisa, projetos ou orientações..."></textarea>
+                </div>
+
+                <div class="form-actions">
+                    <div class="left-actions">
+                        <button type="button" class="btn pdf" onclick="saveAsPDF('teacherFormCard')">Salvar formulário como PDF</button>
+                        <button type="submit" class="btn save">Enviar formulário</button>
+                    </div>
+                    <div>
+                        <button type="button" class="btn back" onclick="goBackToLogin()">Recomeçar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        /* ====== Controls for selector and forms ====== */
+        const selectStudentBtn = document.getElementById('selectStudent');
+        const selectTeacherBtn = document.getElementById('selectTeacher');
+        const selectorCard = document.getElementById('selectorCard');
+        const studentFormCard = document.getElementById('studentFormCard');
+        const teacherFormCard = document.getElementById('teacherFormCard');
+
+        function showCard(cardToShow){
+            // hide selector
+            selectorCard.style.display = 'none';
+            // hide both forms then show requested
+            studentFormCard.style.display = 'none';
+            teacherFormCard.style.display = 'none';
+            if(cardToShow === 'student'){
+                studentFormCard.style.display = 'block';
+                studentFormCard.scrollIntoView({behavior:'smooth', block:'center'});
+            } else {
+                teacherFormCard.style.display = 'block';
+                teacherFormCard.scrollIntoView({behavior:'smooth', block:'center'});
+            }
+        }
+
+        selectStudentBtn.addEventListener('click', () => showCard('student'));
+        selectTeacherBtn.addEventListener('click', () => showCard('teacher'));
+
+        // Back to login helper
+        function goBackToLogin(){
+            studentFormCard.style.display = 'none';
+            teacherFormCard.style.display = 'none';
+
+            
+            selectorCard.style.display = 'block';
+            selectorCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        /* ====== Quadrado de foto ====== */
+        function attachPreview(fileInputId, previewImgId){
+            const input = document.getElementById(fileInputId);
+            const preview = document.getElementById(previewImgId);
+            input.addEventListener('change', () => {
+                const f = input.files && input.files[0];
+                if(!f) { preview.src = 'placeholder-profile.jpg'; return; }
+                const reader = new FileReader();
+                reader.onload = e => preview.src = e.target.result;
+                reader.readAsDataURL(f);
+            });
+        }
+        attachPreview('stuPhoto','stuPreview');
+        attachPreview('profPhoto','profPreview');
+
+        /* ====== salvar curriculo em PDF ====== */
+        function saveAsPDF(cardId){
+            const el = document.getElementById(cardId);
+            if(!window.html2pdf){
+                alert('Biblioteca de PDF não carregada. Por favor, verifique a conexão à internet ou use o botão de imprimir do navegador.');
+                window.print();
+                return;
+            }
+
+            const clone = el.cloneNode(true);
+
+            clone.querySelectorAll('input[type="file"]').forEach(node => {
+                const p = document.createElement('div');
+                p.textContent = 'Arquivo(s) anexados: (ver no cadastro real)';
+                p.style.margin = '8px 0';
+                node.replaceWith(p);
+            });
+
+            clone.style.background = '#ffffff';
+            clone.style.color = '#000';
+
+            const opt = {
+                margin:       12,
+                filename:     'cadastro-leolink.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true },
+                jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(clone).save().catch(err => {
+                console.error(err);
+                alert('Erro ao gerar PDF. Você pode usar a opção de imprimir do navegador como alternativa.');
+            });
+        }
+
+        /* ====== password check ====== */
+        function setupPasswordCheck(formId, pwdId, pwd2Id){
+            const form = document.getElementById(formId);
+            form.addEventListener('submit', (e) => {
+                const p1 = form.querySelector(`#${pwdId}`).value;
+                const p2 = form.querySelector(`#${pwd2Id}`).value;
+                if(p1 !== p2){
+                    e.preventDefault();
+                    alert('As senhas não coincidem. Por favor verifique.');
+                }
+             });
+        }
+        setupPasswordCheck('studentForm','stuSenha','stuSenha2');
+        setupPasswordCheck('teacherForm','profSenha','profSenha2');
+
+        /* ====== CPF ====== */
+        function cpfMask(fieldId){
+            const el = document.getElementById(fieldId);
+            el.addEventListener('input', () => {
+                let v = el.value.replace(/\D/g,'');
+                if(v.length > 11) v = v.slice(0,11);
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d)/, '$1.$2');
+                v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+                el.value = v;
+            });
+        }
+        cpfMask('stuCPF');
+        cpfMask('profCPF');
+
+        /* ====== Optional: help button animation/interaction ====== */
+        const btnHelp = document.getElementById('btn-help');
+        btnHelp.addEventListener('click', () => {
+            alert('Precisa de ajuda? \n- Volte ao login para autenticar.\n- Se não estiver funcionando, é porque não funciona mesmo!');
+        });
+
+        /* Accessibility: allow pressing Enter on selector with keyboard */
+        document.getElementById('selectStudent').addEventListener('keyup', (ev)=>{ if(ev.key==='Enter') showCard('student');});
+        document.getElementById('selectTeacher').addEventListener('keyup', (ev)=>{ if(ev.key==='Enter') showCard('teacher');});
+    </script>
+</body>
+</html>

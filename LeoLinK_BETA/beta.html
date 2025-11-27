@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LeolinK Feed</title>
+  <style>
+    
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #0e1117;
+      color: #f1f1f1;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+      transition: 0.3s;
+    }
+
+    .sidebar {
+      width: 80px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1rem 0;
+      border-right: 1px solid rgba(255,255,255,0.1);
+      transition: width 0.4s ease;
+    }
+
+    .sidebar:hover {
+      width: 220px;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin-bottom: 2rem;
+      animation: pulse 3s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      padding: 10px 20px;
+      color: #f1f1f1;
+      cursor: pointer;
+      border-radius: 10px;
+      margin: 5px 0;
+    }
+
+    .menu-item:hover {
+      background-color: rgba(16, 126, 177, 0.2);
+      transform: scale(1.03);
+    }
+
+    .menu-item i {
+      font-size: 20px;
+      margin-right: 15px;
+      min-width: 25px;
+      text-align: center;
+    }
+
+    .menu-text {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sidebar:hover .menu-text {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* ------------------ FEED CONTAINER ------------------ */
+    .feed-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow-y: auto;
+      padding: 2rem 3rem;
+    }
+
+    .feed-container::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .feed-container::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+    }
+
+    .create-post {
+      background: rgba(255,255,255,0.08);
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeInUp 1s ease;
+    }
+
+    .create-post textarea {
+      background: transparent;
+      border: none;
+      resize: none;
+      color: #f1f1f1;
+      font-size: 1rem;
+      outline: none;
+      height: 60px;
+    }
+
+    .create-post-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .create-post input[type="file"] {
+      display: none;
+    }
+
+    .create-post label {
+      background-color: rgba(16, 126, 177, 0.3);
+      padding: 8px 15px;
+      border-radius: 20px;
+      cursor: pointer;
+    }
+
+    .create-post button {
+      background-color: #107eb1;
+      border: none;
+      border-radius: 25px;
+      padding: 8px 18px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .create-post button:hover {
+      background-color: #0a5c83;
+      transform: scale(1.05);
+    }
+
+    .post {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      animation: fadeInUp 0.7s ease;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .post-header img {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      margin-right: 10px;
+    }
+
+    .post img.post-image {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 0.5rem;
+      max-height: 350px;
+      object-fit: cover;
+    }
+
+    .post-actions {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 0.5rem;
+    }
+
+    .post-actions button {
+      background: none;
+      border: none;
+      color: #f1f1f1;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .post-actions button:hover {
+      color: #107eb1;
+      transform: scale(1.1);
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <img src="logo.jpeg" alt="LeolinK" class="logo">
+    <div class="menu-item"><i>👤</i><span class="menu-text">Perfil</span></div>
+    <div class="menu-item"><i>🧾</i><span class="menu-text">Publicações</span></div>
+    <div class="menu-item"><i>🧪</i><span class="menu-text">Projetos</span></div>
+    <div class="menu-item"><i>💬</i><span class="menu-text">Mensagens</span></div>
+    <div class="menu-item"><i>⚙️</i><span class="menu-text">Configurações</span></div>
+    <div class="menu-item" onclick="window.location.href='index.html'"><i>🚪</i><span class="menu-text">Sair</span></div>
+  </div>
+
+  <!-- FEED -->
+  <div class="feed-container">
+    <!-- CRIAÇÃO DE POST -->
+    <div class="create-post">
+      <textarea id="postText" placeholder="Compartilhe uma descoberta, artigo ou projeto..."></textarea>
+      <div class="create-post-actions">
+        <div>
+          <label for="postImage">📸 Adicionar imagem</label>
+          <input type="file" id="postImage" accept="image/*">
+        </div>
+        <button id="postButton">Postar</button>
+      </div>
+    </div>
+
+    <!-- FEED DE POSTS -->
+    <div id="feed"></div>
+  </div>
+
+  <script>
+    const postButton = document.getElementById('postButton');
+    const postText = document.getElementById('postText');
+    const postImage = document.getElementById('postImage');
+    const feed = document.getElementById('feed');
+
+    postButton.addEventListener('click', () => {
+      const text = postText.value.trim();
+      const file = postImage.files[0];
+
+      if (!text && !file) return;
+
+      const post = document.createElement('div');
+      post.classList.add('post');
+
+      const header = `
+        <div class="post-header">
+          <img src="logo.jpeg" alt="User">
+          <div>
+            <strong>Usuário LeolinK</strong><br>
+            <small>Agora mesmo</small>
+          </div>
+        </div>
+      `;
+
+      let content = `<p>${text}</p>`;
+
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          content += `<img src="${e.target.result}" class="post-image">`;
+          renderPost(header, content);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        renderPost(header, content);
+      }
+
+      postText.value = '';
+      postImage.value = '';
+    });
+
+    function renderPost(header, content) {
+      const post = document.createElement('div');
+      post.classList.add('post');
+      post.innerHTML = `
+        ${header}
+        ${content}
+        <div class="post-actions">
+          <button>👍 Curtir</button>
+          <button>💬 Comentar</button>
+          <button>🔗 Compartilhar</button>
+        </div>
+      `;
+      feed.prepend(post);
+    }
+  </script>
+</body>
+</html>
