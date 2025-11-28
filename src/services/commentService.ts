@@ -21,14 +21,15 @@ export interface CreateCommentData {
 
 export const commentService = {
   async getPostComments(postId: string, page: number = 1, limit: number = 10): Promise<{ data: Comment[] }> {
-    const response = await api.get<{ data: { data: Comment[] } }>(`/posts/${postId}/comments?page=${page}&limit=${limit}`);
-    // ResponseInterceptor envelopa: { data: { data: Comment[] } }
-    return response.data.data ? { data: response.data.data.data || [] } : { data: [] };
+    const response = await api.get(`/posts/${postId}/comments?page=${page}&limit=${limit}`);
+    // ResponseInterceptor envelopa: { data: Comment[], message, statusCode, timestamp }
+    return { data: response.data.data || [] };
   },
 
   async createComment(postId: string, data: CreateCommentData): Promise<{ data: Comment }> {
-    const response = await api.post<{ data: { data: Comment } }>(`/posts/${postId}/comments`, data);
-    return response.data.data ? { data: response.data.data.data } : response.data as any;
+    const response = await api.post(`/posts/${postId}/comments`, data);
+    // ResponseInterceptor envelopa: { data: Comment, message, statusCode, timestamp }
+    return { data: response.data.data };
   },
 
   async deleteComment(id: string): Promise<void> {
@@ -36,7 +37,8 @@ export const commentService = {
   },
 
   async updateComment(id: string, data: CreateCommentData): Promise<{ data: Comment }> {
-    const response = await api.patch<{ data: { data: Comment } }>(`/comments/${id}`, data);
-    return response.data.data ? { data: response.data.data.data } : response.data as any;
+    const response = await api.patch(`/comments/${id}`, data);
+    // ResponseInterceptor envelopa: { data: Comment, message, statusCode, timestamp }
+    return { data: response.data.data };
   },
 };
