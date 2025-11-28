@@ -1,0 +1,53 @@
+:root {
+  /* Cores principais do LeoLink */
+  --primary-yellow: #FFD700;
+  --primary-yellow-dark: #E6C200;
+  --primary-yellow-light: #FFEB3B;
+  --primary-black: #1a1a1a;
+  --primary-black-light: #2d2d2d;
+  --primary-black-dark: #0e0e0e;
+  
+  /* Cores de fundo */
+  --bg-dark: #0e1117;
+  --bg-card: rgba(255, 255, 255, 0.08);
+  --bg-card-hover: rgba(255, 255, 255, 0.12);
+  --bg-sidebar: rgba(26, 26, 26, 0.95);
+  
+  /* Cores de texto */
+  --text-primary: #f1f1f1;
+  --text-secondary: #b0b0b0;
+  --text-muted: #888888;
+  --text-dark: #1a1a1a;
+  
+  /* Cores de status */
+  --success: #4caf50;
+  --error: #f44336;
+  --warning: #ff9800;
+  --info: #2196f3;
+  
+  /* Bordas */
+  --border-color: rgba(255, 255, 255, 0.1);
+  --border-yellow: rgba(255, 215, 0, 0.3);
+  
+  /* Sombras */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-yellow: 0 4px 15px rgba(255, 215, 0, 0.3);
+  
+  /* Transições */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.4s ease;
+  
+  /* Espaçamentos */
+  --sidebar-width: 80px;
+  --sidebar-width-expanded: 240px;
+  --header-height: 60px;
+  
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 15px;
+  --radius-full: 50%;
+}
