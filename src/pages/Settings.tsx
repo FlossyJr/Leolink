@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import Layout from '../components/Layout/Layout';
 import { useAuth } from '../contexts/AuthContext';
+import { userService } from '../services/userService';
 import './Settings.css';
 
 function Settings() {
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [activeSection, setActiveSection] = useState<'profile' | 'account' | 'privacy' | 'notifications'>('profile');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
 
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -31,9 +34,31 @@ function Settings() {
     setSettings({ ...settings, [setting]: !settings[setting] });
   };
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Perfil atualizado com sucesso!');
+    if (!user) return;
+    
+    setLoading(true);
+    setMessage(null);
+    
+    try {
+      await userService.updateUser(user.id, {
+        name: formData.name,
+        email: formData.email,
+      });
+      
+      // Atualizar contexto do usuário
+      if (refreshUser) {
+        await refreshUser();
+      }
+      
+      setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
+    } catch (error: any) {
+      console.error('Erro ao atualizar perfil:', error);
+      setMessage({ type: 'error', text: error.response?.data?.message || 'Erro ao atualizar perfil' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChangePassword = (e: React.FormEvent) => {
@@ -89,6 +114,13 @@ function Settings() {
             {activeSection === 'profile' && (
               <div className="settings-section">
                 <h2>Informações do Perfil</h2>
+                
+                {message && (
+                  <div className={`message ${message.type}`}>
+                    {message.text}
+                  </div>
+                )}
+                
                 <form onSubmit={handleSaveProfile}>
                   <div className="form-group">
                     <label>Nome completo</label>
@@ -124,8 +156,8 @@ function Settings() {
                     />
                   </div>
 
-                  <button type="submit" className="btn-save">
-                    Salvar alterações
+                  <button type="submit" className="btn-save" disabled={loading}>
+                    {loading ? 'Salvando...' : 'Salvar alterações'}
                   </button>
                 </form>
               </div>
