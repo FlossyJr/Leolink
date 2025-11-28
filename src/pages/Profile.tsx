@@ -23,29 +23,40 @@ function Profile() {
     try {
       setLoading(true);
       
-      // Carregar posts e estatísticas de follow em paralelo
-      const [postsResponse, followStats] = await Promise.all([
-        postService.getUserPosts(user.id),
-        followService.getFollowStats(user.id)
-      ]);
+      // Carregar posts primeiro
+      let userPosts: Post[] = [];
+      try {
+        const postsResponse = await postService.getUserPosts(user.id);
+        userPosts = postsResponse.items || [];
+      } catch {
+        // Fallback: buscar todos e filtrar
+        const response = await postService.getAllPosts();
+        userPosts = (response.items || []).filter(post => post.author?.id === user.id);
+      }
       
-      setPosts(postsResponse.items || []);
+      setPosts(userPosts);
+      
+      // Tentar carregar estatísticas de follow
+      let followers = 0;
+      let following = 0;
+      try {
+        const followStats = await followService.getFollowStats(user.id);
+        // A resposta pode vir como followStats diretamente ou followStats.data
+        const statsData = followStats?.data || followStats;
+        followers = statsData?.followersCount || 0;
+        following = statsData?.followingCount || 0;
+      } catch {
+        // Ignorar erro - usar valores padrão
+        console.log('Follow stats não disponível');
+      }
+      
       setStats({
-        posts: postsResponse.meta?.total || postsResponse.items?.length || 0,
-        followers: followStats.data.followersCount,
-        following: followStats.data.followingCount
+        posts: userPosts.length,
+        followers,
+        following
       });
     } catch (error) {
       console.error('Erro ao carregar dados do perfil:', error);
-      // Fallback para o método antigo se o novo endpoint falhar
-      try {
-        const response = await postService.getAllPosts();
-        const userPosts = (response.items || []).filter(post => post.author?.id === user.id);
-        setPosts(userPosts);
-        setStats(prev => ({ ...prev, posts: userPosts.length }));
-      } catch (fallbackError) {
-        console.error('Erro no fallback:', fallbackError);
-      }
     } finally {
       setLoading(false);
     }

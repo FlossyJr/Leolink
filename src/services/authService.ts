@@ -41,7 +41,9 @@ export const authService = {
   },
 
   async getMe(): Promise<{ data: User }> {
-    const response = await api.get<{ data: User }>('/me');
-    return response.data;
+    const response = await api.get<{ data: { data: User } }>('/me');
+    // ResponseInterceptor envelopa em { data: { data: User } }
+    const userData = response.data.data?.data || response.data.data || response.data;
+    return { data: userData as User };
   },
 };

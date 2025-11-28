@@ -39,7 +39,7 @@ function Feed() {
     }
   };
 
-  const handleCreatePost = async (content: string, image?: File) => {
+  const handleCreatePost = async (content: string) => {
     try {
       const response = await postService.createPost({ content });
       console.log('Post criado:', response);

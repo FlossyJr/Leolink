@@ -134,11 +134,6 @@ function PostCard({ post, onDelete, onUpdate }: PostCardProps) {
 
       <div className="post-body">
         <p className="post-content">{post.content}</p>
-        {post.imageUrl && (
-          <div className="post-image">
-            <img src={post.imageUrl} alt="Post" />
-          </div>
-        )}
       </div>
 
       <footer className="post-footer">
