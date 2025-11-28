@@ -4,12 +4,14 @@ import { useAuth } from '../contexts/AuthContext';
 import { Layout, PostCard } from '../components';
 import { postService, Post } from '../services/postService';
 import { followService } from '../services/followService';
+import { likeService } from '../services/likeService';
 import './Profile.css';
 
 function Profile() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [posts, setPosts] = useState<Post[]>([]);
+  const [likedPosts, setLikedPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'posts' | 'likes'>('posts');
   const [stats, setStats] = useState({
@@ -35,6 +37,21 @@ function Profile() {
       }
       
       setPosts(userPosts);
+      
+      // Carregar posts curtidos
+      try {
+        const likesResponse = await likeService.getUserLikes(user.id);
+        const likedPostIds = likesResponse.data.posts.map(like => like.targetId);
+        
+        // Buscar os posts completos
+        if (likedPostIds.length > 0) {
+          const allPosts = await postService.getAllPosts();
+          const likedPostsData = allPosts.items.filter(post => likedPostIds.includes(post.id));
+          setLikedPosts(likedPostsData);
+        }
+      } catch (error) {
+        console.log('Erro ao carregar posts curtidos:', error);
+      }
       
       // Tentar carregar estatísticas de follow
       let followers = 0;
@@ -170,6 +187,7 @@ function Profile() {
                     key={post.id}
                     post={post}
                     onDelete={handleDeletePost}
+                    onUpdate={loadUserData}
                   />
                 ))}
               </div>
@@ -186,13 +204,25 @@ function Profile() {
               </div>
             )
           ) : (
-            <div className="empty-state">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-              </svg>
-              <h3>Nenhuma curtida ainda</h3>
-              <p>Posts que você curtir aparecerão aqui.</p>
-            </div>
+            likedPosts.length > 0 ? (
+              <div className="posts-grid">
+                {likedPosts.map(post => (
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onUpdate={loadUserData}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="currentColor" opacity="0.3">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+                <h3>Nenhuma curtida ainda</h3>
+                <p>Posts que você curtir aparecerão aqui.</p>
+              </div>
+            )
           )}
         </div>
       </div>

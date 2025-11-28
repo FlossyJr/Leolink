@@ -42,19 +42,23 @@ function Settings() {
     setMessage(null);
     
     try {
-      await userService.updateUser(user.id, {
+      console.log('[Settings] Atualizando usuário:', { userId: user.id, name: formData.name, email: formData.email });
+      const response = await userService.updateUser(user.id, {
         name: formData.name,
         email: formData.email,
       });
+      console.log('[Settings] Resposta do update:', response);
       
       // Atualizar contexto do usuário
       if (refreshUser) {
+        console.log('[Settings] Chamando refreshUser...');
         await refreshUser();
+        console.log('[Settings] refreshUser concluído');
       }
       
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
     } catch (error: any) {
-      console.error('Erro ao atualizar perfil:', error);
+      console.error('[Settings] Erro ao atualizar perfil:', error);
       setMessage({ type: 'error', text: error.response?.data?.message || 'Erro ao atualizar perfil' });
     } finally {
       setLoading(false);
